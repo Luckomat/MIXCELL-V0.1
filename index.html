@@ -1,0 +1,1538 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#08090a">
+    <meta name="description" content="Protótipo V0.2 do site da MixCell em Pedro Leopoldo.">
+    <title>MixCell — Pedro Leopoldo</title>
+
+    <style>
+        :root {
+            --orange: #ff6a1a;
+            --orange-2: #ff8a45;
+            --bg: #08090a;
+            --bg-soft: #0e0f11;
+            --card: #111315;
+            --card-2: #15181b;
+            --line: rgba(255, 255, 255, .10);
+            --line-strong: rgba(255, 106, 26, .35);
+            --text: #f6f6f4;
+            --muted: #9ca1a7;
+            --max: 1420px;
+            --radius: 24px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 78% 8%, rgba(255, 106, 26, .10), transparent 26%),
+                linear-gradient(180deg, #070809 0%, #0a0b0c 100%);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.45;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+            background-size: 88px 88px;
+            mask-image: linear-gradient(to bottom, black, transparent 74%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            width: min(calc(100% - 44px), var(--max));
+            margin-inline: auto;
+        }
+
+        .section {
+            padding: 104px 0;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            color: var(--orange);
+            font-size: .76rem;
+            font-weight: 850;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 34px;
+            height: 2px;
+            background: var(--orange);
+        }
+
+        .section-title {
+            margin: 0;
+            max-width: 820px;
+            font-size: clamp(2.4rem, 5.6vw, 5.4rem);
+            line-height: .94;
+            letter-spacing: -.055em;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 52px;
+            padding: 0 22px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-weight: 800;
+            transition: transform .2s ease, background .2s ease, border-color .2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            color: #0b0c0d;
+            background: var(--orange);
+            box-shadow: 0 12px 34px rgba(255, 106, 26, .20);
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-2);
+        }
+
+        .btn-ghost {
+            border-color: rgba(255,255,255,.26);
+            color: var(--text);
+            background: rgba(255,255,255,.02);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--orange);
+        }
+
+        /* Header */
+        .site-header {
+            position: absolute;
+            inset: 0 0 auto;
+            z-index: 20;
+            padding: 26px 0;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 26px;
+        }
+
+        .brand {
+            flex: 0 0 auto;
+        }
+
+        .brand img {
+            width: 154px;
+            height: 48px;
+            object-fit: contain;
+            object-position: left center;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            color: #d4d6d8;
+            font-size: .92rem;
+        }
+
+        .nav-links > a:not(.btn) {
+            position: relative;
+        }
+
+        .nav-links > a:not(.btn)::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 100%;
+            bottom: -8px;
+            height: 2px;
+            background: var(--orange);
+            transition: right .2s ease;
+        }
+
+        .nav-links > a:not(.btn):hover::after {
+            right: 0;
+        }
+
+
+        /* Mobile menu */
+        .menu-toggle {
+            position: relative;
+            z-index: 120;
+            display: none;
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 50%;
+            color: var(--text);
+            background: rgba(12,13,14,.72);
+            backdrop-filter: blur(14px);
+            cursor: pointer;
+        }
+
+        .menu-toggle::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--orange);
+            box-shadow: 0 0 0 4px rgba(255,106,26,.10);
+            transform: translate(-50%, -50%);
+            transition: transform .35s ease, box-shadow .35s ease;
+        }
+
+        .menu-toggle-line {
+            position: absolute;
+            left: 13px;
+            width: 22px;
+            height: 2px;
+            border-radius: 999px;
+            background: currentColor;
+            transform-origin: center;
+            transition: top .35s cubic-bezier(.2,.8,.2,1), transform .35s cubic-bezier(.2,.8,.2,1), width .35s ease;
+        }
+
+        .menu-toggle-line:first-child {
+            top: 18px;
+        }
+
+        .menu-toggle-line:last-child {
+            top: 28px;
+        }
+
+        .menu-toggle[aria-expanded="true"] .menu-toggle-line:first-child {
+            top: 23px;
+            transform: rotate(45deg);
+            width: 24px;
+        }
+
+        .menu-toggle[aria-expanded="true"] .menu-toggle-line:last-child {
+            top: 23px;
+            transform: rotate(-45deg);
+            width: 24px;
+        }
+
+        .menu-toggle[aria-expanded="true"]::after {
+            transform: translate(-50%, -50%) scale(.88);
+            box-shadow: 0 0 0 6px rgba(255,106,26,.08);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 110;
+            display: grid;
+            align-items: center;
+            min-height: 100dvh;
+            padding: 104px 22px 34px;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: rgba(0,0,0,.86);
+            backdrop-filter: blur(12px);
+            transition: opacity .32s ease, visibility .32s ease;
+        }
+
+        .mobile-menu::before,
+        .mobile-menu::after {
+            content: "";
+            position: absolute;
+            width: 48vw;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,106,26,.42), transparent);
+            pointer-events: none;
+        }
+
+        .mobile-menu::before {
+            left: -18vw;
+            top: 27%;
+            transform: rotate(24deg);
+        }
+
+        .mobile-menu::after {
+            right: -18vw;
+            bottom: 21%;
+            transform: rotate(-24deg);
+        }
+
+        .mobile-menu.is-open {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .mobile-menu-inner {
+            width: min(100%, 560px);
+            margin-inline: auto;
+        }
+
+        .mobile-menu-nav {
+            display: grid;
+            gap: 2px;
+            margin-bottom: 34px;
+        }
+
+        .mobile-menu-link {
+            display: grid;
+            grid-template-columns: 34px 1fr auto;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255,255,255,.10);
+            font-size: clamp(1.95rem, 9vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -.045em;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform .34s ease, opacity .34s ease, color .2s ease;
+        }
+
+        .mobile-menu-link span:first-child {
+            color: var(--orange);
+            font-size: .66rem;
+            font-weight: 850;
+            letter-spacing: .08em;
+        }
+
+        .mobile-menu-link::after {
+            content: "↗";
+            color: rgba(255,255,255,.24);
+            font-size: .95rem;
+            transition: color .2s ease, transform .2s ease;
+        }
+
+        .mobile-menu-link:hover,
+        .mobile-menu-link:focus-visible {
+            color: var(--orange);
+            outline: none;
+        }
+
+        .mobile-menu-link:hover::after,
+        .mobile-menu-link:focus-visible::after {
+            color: var(--orange);
+            transform: translate(2px,-2px);
+        }
+
+        .mobile-menu.is-open .mobile-menu-link {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .mobile-menu.is-open .mobile-menu-link:nth-child(1) { transition-delay: .05s; }
+        .mobile-menu.is-open .mobile-menu-link:nth-child(2) { transition-delay: .08s; }
+        .mobile-menu.is-open .mobile-menu-link:nth-child(3) { transition-delay: .11s; }
+        .mobile-menu.is-open .mobile-menu-link:nth-child(4) { transition-delay: .14s; }
+        .mobile-menu.is-open .mobile-menu-link:nth-child(5) { transition-delay: .17s; }
+
+        .mobile-menu-cta {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .mobile-menu-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 28px;
+            color: #858a90;
+            font-size: .78rem;
+        }
+
+        body.menu-open {
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            min-height: 920px;
+            padding: 150px 0 42px;
+            overflow: hidden;
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 360px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,106,26,.60), transparent);
+            transform: rotate(25deg);
+            pointer-events: none;
+        }
+
+        .hero::before {
+            left: -170px;
+            top: 170px;
+        }
+
+        .hero::after {
+            right: -170px;
+            bottom: 190px;
+        }
+
+        .hero-main {
+            display: grid;
+            grid-template-columns: .76fr 1.24fr;
+            gap: 46px;
+            align-items: center;
+            min-height: 560px;
+        }
+
+        .hero-copy h1 {
+            margin: 12px 0 24px;
+            max-width: 630px;
+            font-size: clamp(4.1rem, 6.8vw, 7.2rem);
+            line-height: .86;
+            letter-spacing: -.075em;
+        }
+
+        .hero-copy h1 span {
+            color: var(--orange);
+        }
+
+        .hero-copy > p {
+            max-width: 560px;
+            margin: 0;
+            color: #b8bcc1;
+            font-size: 1.08rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .hero-points {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 48px;
+        }
+
+        .hero-point {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            color: #bcc0c5;
+            font-size: .86rem;
+        }
+
+        .hero-point-icon {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,106,26,.48);
+            border-radius: 12px;
+            color: var(--orange);
+            font-weight: 900;
+        }
+
+        .exploded-shell {
+            position: relative;
+            min-height: 600px;
+            display: grid;
+            place-items: center;
+        }
+
+        .exploded-glow {
+            position: absolute;
+            width: 82%;
+            height: 42%;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: radial-gradient(ellipse, rgba(255,106,26,.14), transparent 70%);
+            filter: blur(18px);
+            pointer-events: none;
+        }
+
+        .exploded-view {
+            position: relative;
+            width: 100%;
+            min-height: 560px;
+        }
+
+        .piece {
+            position: absolute;
+            top: 50%;
+            width: 18.5%;
+            max-height: 480px;
+            object-fit: contain;
+            transform: translateY(-50%);
+            filter: drop-shadow(0 20px 28px rgba(0,0,0,.58));
+        }
+
+        .piece-1 { left: 0%; }
+        .piece-2 { left: 15.5%; }
+        .piece-3 { left: 31%; }
+        .piece-4 { left: 47%; }
+        .piece-5 { left: 63.5%; }
+        .piece-6 { left: 80%; }
+
+        .piece-label {
+            position: absolute;
+            top: 7%;
+            width: 136px;
+            padding-left: 12px;
+            border-left: 1px solid rgba(255,255,255,.28);
+            color: #c9ccd0;
+            font-size: .67rem;
+            line-height: 1.35;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .piece-label strong {
+            display: block;
+            color: var(--text);
+            margin-bottom: 4px;
+            font-size: .70rem;
+        }
+
+        .piece-label::after {
+            content: "";
+            position: absolute;
+            left: -1px;
+            top: 100%;
+            width: 1px;
+            height: 80px;
+            background: linear-gradient(var(--orange), transparent);
+        }
+
+        .label-1 { left: 4%; }
+        .label-2 { left: 21%; top: 3%; }
+        .label-3 { left: 38%; }
+        .label-4 { left: 54%; top: 4%; }
+        .label-5 { left: 70%; }
+        .label-6 { right: -2%; top: 5%; }
+
+        .exploded-caption {
+            position: absolute;
+            left: 50%;
+            bottom: 3%;
+            transform: translateX(-50%);
+            color: #73787e;
+            font-size: .78rem;
+            white-space: nowrap;
+        }
+
+        .exploded-caption::after {
+            content: "";
+            display: block;
+            width: 220px;
+            height: 3px;
+            margin: 14px auto 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--orange) 0 18%, #2a2d31 18% 100%);
+        }
+
+        /* Service cards immediately under hero */
+        .hero-services {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .hero-service {
+            position: relative;
+            min-height: 250px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, #101214, #0b0c0d);
+        }
+
+        .hero-service::before {
+            content: "";
+            position: absolute;
+            inset: auto 0 0;
+            height: 52%;
+            background: linear-gradient(transparent, rgba(0,0,0,.52));
+            pointer-events: none;
+        }
+
+        .hero-service-copy {
+            position: absolute;
+            z-index: 2;
+            top: 34px;
+            right: 34px;
+            width: 44%;
+        }
+
+        .hero-service h3 {
+            margin: 0 0 8px;
+            font-size: 1.55rem;
+            letter-spacing: -.04em;
+        }
+
+        .hero-service p {
+            margin: 0 0 18px;
+            color: var(--muted);
+            font-size: .95rem;
+        }
+
+        .round-link {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--orange);
+            border-radius: 50%;
+            color: var(--orange);
+            font-weight: 900;
+        }
+
+        .service-art {
+            position: absolute;
+            left: 0;
+            bottom: -8px;
+            width: 56%;
+            height: 92%;
+            object-fit: contain;
+            object-position: left bottom;
+            filter: drop-shadow(0 18px 28px rgba(0,0,0,.45));
+        }
+
+        .film-demo {
+            position: absolute;
+            left: 32px;
+            bottom: -62px;
+            width: 138px;
+            height: 276px;
+            border-radius: 30px;
+            border: 8px solid #23262a;
+            background: linear-gradient(145deg, #16181a, #25282c);
+            transform: rotate(-8deg);
+            box-shadow: 22px -12px 0 -12px rgba(180,198,208,.22);
+        }
+
+        .film-demo::after {
+            content: "";
+            position: absolute;
+            inset: -28px -36px 24px 26px;
+            border-radius: 24px;
+            border: 2px solid rgba(171, 213, 236, .48);
+            background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,.02));
+            transform: rotate(6deg);
+        }
+
+        .case-demo {
+            position: absolute;
+            left: 24px;
+            bottom: -48px;
+            width: 150px;
+            height: 298px;
+            border-radius: 40px;
+            background: var(--orange);
+            transform: rotate(7deg);
+            box-shadow:
+                -40px 16px 0 -4px #25282c,
+                -80px 34px 0 -8px #111315;
+        }
+
+        .case-demo::before {
+            content: "";
+            position: absolute;
+            width: 52px;
+            height: 52px;
+            left: 18px;
+            top: 18px;
+            border-radius: 16px;
+            background: #111315;
+            box-shadow: 0 0 0 4px rgba(255,255,255,.14);
+        }
+
+        /* Content section */
+        .showcase-head,
+        .faq-grid,
+        .footer-main {
+            display: grid;
+            grid-template-columns: .7fr 1.3fr;
+            gap: 48px;
+            align-items: start;
+        }
+
+        .products {
+            border-top: 1px solid var(--line);
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 44px;
+        }
+
+        .product-card {
+            min-height: 390px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: linear-gradient(180deg, #111315 0%, #0d0f10 100%);
+            transition: transform .2s ease, border-color .2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,106,26,.38);
+        }
+
+        .product-visual {
+            height: 220px;
+            display: grid;
+            place-items: center;
+        }
+
+        .product-phone {
+            width: 104px;
+            height: 204px;
+            border: 7px solid #222529;
+            border-radius: 26px;
+            background:
+                radial-gradient(circle at 50% 12%, #111 0 16px, transparent 17px),
+                linear-gradient(145deg, var(--orange), #212428 64%);
+            box-shadow: 0 18px 32px rgba(0,0,0,.42);
+        }
+
+        .product-card:nth-child(3n + 2) .product-phone {
+            background: radial-gradient(circle at 50% 12%, #111 0 16px, transparent 17px), linear-gradient(145deg, #8a94a2, #1f2226 66%);
+        }
+
+        .product-card:nth-child(3n + 3) .product-phone {
+            background: radial-gradient(circle at 50% 12%, #111 0 16px, transparent 17px), linear-gradient(145deg, #e5e0d6, #5d6269 66%);
+        }
+
+        .demo-label {
+            color: var(--orange);
+            font-size: .68rem;
+            font-weight: 850;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .product-card h3 {
+            margin: 8px 0 2px;
+            font-size: 1.02rem;
+        }
+
+        .price {
+            margin: 0 0 14px;
+            font-size: 1.14rem;
+            font-weight: 850;
+        }
+
+        .product-card .btn {
+            width: 100%;
+            min-height: 44px;
+            margin-top: auto;
+            font-size: .86rem;
+        }
+
+        .fineprint {
+            margin: 14px 0 0;
+            color: #73787e;
+            font-size: .74rem;
+        }
+
+        /* Trust */
+        .trust {
+            background: #0b0d0e;
+            border-block: 1px solid var(--line);
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: .78fr 1.22fr;
+            gap: 18px;
+        }
+
+        .trust-lead,
+        .trust-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #101214;
+        }
+
+        .trust-lead {
+            padding: 38px;
+            min-height: 340px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .trust-lead strong {
+            display: block;
+            color: var(--orange);
+        }
+
+        .rating {
+            font-size: clamp(4rem, 8vw, 7rem);
+            font-weight: 900;
+            letter-spacing: -.07em;
+            line-height: .8;
+        }
+
+        .stars {
+            color: var(--orange);
+            letter-spacing: .12em;
+        }
+
+        .trust-photos {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 18px;
+        }
+
+        .trust-card {
+            overflow: hidden;
+            min-height: 340px;
+        }
+
+        .trust-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* FAQ */
+        .faq-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .faq-item {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: #0f1113;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            min-height: 58px;
+            padding: 0 16px 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            border: 0;
+            color: var(--text);
+            background: transparent;
+            text-align: left;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .faq-plus {
+            width: 32px;
+            height: 32px;
+            flex: 0 0 32px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,106,26,.58);
+            border-radius: 50%;
+            color: var(--orange);
+            font-size: 1.2rem;
+            transition: transform .2s ease, background .2s ease;
+        }
+
+        .faq-answer {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .28s ease;
+        }
+
+        .faq-answer > div {
+            overflow: hidden;
+        }
+
+        .faq-answer p {
+            margin: 0;
+            padding: 0 62px 20px 20px;
+            color: var(--muted);
+        }
+
+        .faq-item.open .faq-answer {
+            grid-template-rows: 1fr;
+        }
+
+        .faq-item.open .faq-plus {
+            transform: rotate(45deg);
+            color: #111;
+            background: var(--orange);
+        }
+
+        /* Contact */
+        .contact {
+            padding-bottom: 72px;
+        }
+
+        .contact-card {
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: .78fr 1.22fr;
+            min-height: 470px;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: #101214;
+        }
+
+        .contact-info {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .contact-info h2 {
+            margin: 0 0 22px;
+            font-size: clamp(2.7rem, 5vw, 5.2rem);
+            line-height: .9;
+            letter-spacing: -.06em;
+        }
+
+        .contact-meta {
+            display: grid;
+            gap: 20px;
+            margin-top: 40px;
+            color: #c7c9cc;
+        }
+
+        .contact-meta strong {
+            display: block;
+            color: var(--orange);
+            margin-bottom: 4px;
+            font-size: .75rem;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .map {
+            min-height: 470px;
+            background: #d9d8d6;
+        }
+
+        .map iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 470px;
+            border: 0;
+            filter: grayscale(1) contrast(.92) brightness(.82);
+        }
+
+        /* Footer */
+        footer {
+            padding: 34px 0 42px;
+            border-top: 1px solid var(--line);
+            background: #070809;
+        }
+
+        .footer-row {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .footer-logo {
+            width: 142px;
+            height: 44px;
+            object-fit: contain;
+            object-position: left center;
+            margin-bottom: 12px;
+        }
+
+        .signature {
+            color: #767b81;
+            font-size: .78rem;
+        }
+
+        .signature a {
+            color: #c4c7ca;
+        }
+
+        @media (max-width: 1180px) {
+            .hero {
+                min-height: auto;
+            }
+
+            .hero-main {
+                grid-template-columns: 1fr;
+                padding-top: 30px;
+            }
+
+            .hero-copy {
+                max-width: 820px;
+            }
+
+            .exploded-shell {
+                min-height: 540px;
+            }
+
+            .hero-services {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+            }
+
+            .menu-toggle {
+                display: inline-block;
+            }
+
+            .hero-points {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .hero-point {
+                max-width: 260px;
+            }
+
+            .piece-label {
+                display: none;
+            }
+
+            .hero-services,
+            .product-grid,
+            .trust-grid,
+            .showcase-head,
+            .faq-grid,
+            .contact-card {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-services {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-service {
+                min-height: 230px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .trust-photos {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .contact-info {
+                padding: 38px;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .container {
+                width: min(calc(100% - 28px), var(--max));
+            }
+
+            .section {
+                padding: 78px 0;
+            }
+
+            .site-header {
+                padding: 18px 0;
+            }
+
+            .brand img {
+                width: 122px;
+                height: 38px;
+            }
+
+            .nav .btn {
+                min-height: 42px;
+                padding: 0 14px;
+                font-size: .80rem;
+            }
+
+            .hero {
+                padding-top: 116px;
+            }
+
+            .hero-copy h1 {
+                font-size: clamp(3.6rem, 18vw, 5.4rem);
+            }
+
+            .exploded-shell,
+            .exploded-view {
+                min-height: 410px;
+            }
+
+            .piece {
+                width: 23%;
+            }
+
+            .piece-1 { left: -3%; }
+            .piece-2 { left: 13%; }
+            .piece-3 { left: 29%; }
+            .piece-4 { left: 45%; }
+            .piece-5 { left: 61%; }
+            .piece-6 { left: 77%; }
+
+            .exploded-caption {
+                bottom: 0;
+                font-size: .70rem;
+            }
+
+            .hero-service-copy {
+                right: 22px;
+                top: 26px;
+                width: 47%;
+            }
+
+            .product-grid,
+            .trust-photos {
+                grid-template-columns: 1fr;
+            }
+
+            .product-card {
+                min-height: 360px;
+            }
+
+            .contact-info {
+                padding: 30px;
+            }
+
+            .footer-row {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition-duration: .01ms !important;
+                animation-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav">
+            <a class="brand" href="#inicio" aria-label="MixCell — início">
+                <img src="assets/logo.webp" alt="MixCell">
+            </a>
+
+            <nav class="nav-links" aria-label="Navegação principal">
+                <a href="#inicio">Início</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#aparelhos">Aparelhos</a>
+                <a href="#duvidas">Dúvidas</a>
+                <a href="#contato">Contato</a>
+                <a class="btn btn-ghost" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20MixCell%20e%20gostaria%20de%20falar%20com%20voc%C3%AAs." target="_blank" rel="noopener noreferrer">◉ Falar no WhatsApp</a>
+            </nav>
+
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir menu">
+                <span class="menu-toggle-line" aria-hidden="true"></span>
+                <span class="menu-toggle-line" aria-hidden="true"></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+        <div class="mobile-menu-inner">
+            <nav class="mobile-menu-nav" aria-label="Navegação mobile">
+                <a class="mobile-menu-link" href="#inicio"><span>01</span><span>Início</span></a>
+                <a class="mobile-menu-link" href="#servicos"><span>02</span><span>Serviços</span></a>
+                <a class="mobile-menu-link" href="#aparelhos"><span>03</span><span>Aparelhos</span></a>
+                <a class="mobile-menu-link" href="#duvidas"><span>04</span><span>Dúvidas</span></a>
+                <a class="mobile-menu-link" href="#contato"><span>05</span><span>Contato</span></a>
+            </nav>
+
+            <a class="btn btn-primary mobile-menu-cta" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20MixCell%20e%20gostaria%20de%20falar%20com%20voc%C3%AAs." target="_blank" rel="noopener noreferrer">◉ Falar no WhatsApp →</a>
+
+            <div class="mobile-menu-meta">
+                <span>MixCell</span>
+                <span>Pedro Leopoldo · MG</span>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <section class="hero" id="inicio">
+            <div class="container">
+                <div class="hero-main">
+                    <div class="hero-copy">
+                        <div class="eyebrow">Assistência técnica</div>
+                        <h1>Aqui, seu <span>celular volta</span> à vida.</h1>
+                        <p>Assistência técnica, celulares e acessórios em Pedro Leopoldo. Uma experiência direta para você entender o que a MixCell oferece e chamar a loja quando precisar.</p>
+
+                        <div class="hero-actions">
+                            <a class="btn btn-primary" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Preciso%20de%20ajuda%20com%20meu%20celular%20e%20vim%20pelo%20site." target="_blank" rel="noopener noreferrer">◉ Falar no WhatsApp →</a>
+                            <a class="btn btn-ghost" href="#servicos">Nossos serviços</a>
+                        </div>
+
+                        <div class="hero-points">
+                            <div class="hero-point"><span class="hero-point-icon">✦</span><span>Assistência técnica</span></div>
+                            <div class="hero-point"><span class="hero-point-icon">↗</span><span>Celulares e acessórios</span></div>
+                            <div class="hero-point"><span class="hero-point-icon">⌖</span><span>Centro de Pedro Leopoldo</span></div>
+                        </div>
+                    </div>
+
+                    <div class="exploded-shell" aria-label="Exploded view demonstrativa de smartphone">
+                        <div class="exploded-glow"></div>
+                        <div class="exploded-view">
+                            <img class="piece piece-1" src="assets/iphone/iphone-camada-vidro-frontal.webp" alt="Camada frontal do smartphone">
+                            <img class="piece piece-2" src="assets/iphone/iphone-camada-display.webp" alt="Display do smartphone">
+                            <img class="piece piece-3" src="assets/iphone/iphone-camada-placa-mae.webp" alt="Placa interna do smartphone">
+                            <img class="piece piece-4" src="assets/iphone/iphone-camada-bateria.webp" alt="Bateria do smartphone">
+                            <img class="piece piece-5" src="assets/iphone/iphone-camada-interior-back.png" alt="Estrutura interna do smartphone">
+                            <img class="piece piece-6" src="assets/iphone/iphone-camada-back.webp" alt="Tampa traseira do smartphone">
+
+                            <div class="piece-label label-1"><strong>Frontal</strong>Vidro e proteção</div>
+                            <div class="piece-label label-2"><strong>Display</strong>Imagem e toque</div>
+                            <div class="piece-label label-3"><strong>Placa interna</strong>Componentes eletrônicos</div>
+                            <div class="piece-label label-4"><strong>Bateria</strong>Energia do aparelho</div>
+                            <div class="piece-label label-5"><strong>Estrutura</strong>Base interna</div>
+                            <div class="piece-label label-6"><strong>Traseira</strong>Fechamento do aparelho</div>
+
+                            <div class="exploded-caption">Visão explodida · conceito visual demonstrativo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-services" id="servicos">
+                    <article class="hero-service">
+                        <div class="film-demo" aria-hidden="true"></div>
+                        <div class="hero-service-copy">
+                            <h3>Películas</h3>
+                            <p>Proteção para a tela no dia a dia.</p>
+                            <a class="round-link" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Gostaria%20de%20saber%20mais%20sobre%20pel%C3%ADculas." target="_blank" rel="noopener noreferrer" aria-label="Perguntar sobre películas">→</a>
+                        </div>
+                    </article>
+
+                    <article class="hero-service">
+                        <img class="service-art" src="assets/manutencao.webp" alt="Manutenção de celular na MixCell" loading="lazy">
+                        <div class="hero-service-copy">
+                            <h3>Manutenção</h3>
+                            <p>Seu aparelho precisa de avaliação?</p>
+                            <a class="round-link" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Gostaria%20de%20falar%20sobre%20a%20manuten%C3%A7%C3%A3o%20do%20meu%20celular." target="_blank" rel="noopener noreferrer" aria-label="Perguntar sobre manutenção">→</a>
+                        </div>
+                    </article>
+
+                    <article class="hero-service">
+                        <div class="case-demo" aria-hidden="true"></div>
+                        <div class="hero-service-copy">
+                            <h3>Capinhas</h3>
+                            <p>Proteção e estilo em um só lugar.</p>
+                            <a class="round-link" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Gostaria%20de%20saber%20quais%20capinhas%20est%C3%A3o%20dispon%C3%ADveis." target="_blank" rel="noopener noreferrer" aria-label="Perguntar sobre capinhas">→</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section products" id="aparelhos">
+            <div class="container">
+                <div class="showcase-head">
+                    <div>
+                        <div class="eyebrow">Aparelhos</div>
+                        <h2 class="section-title">Uma vitrine para começar a conversa.</h2>
+                    </div>
+                    <div>
+                        <p class="muted">Os modelos e valores abaixo são demonstrativos da V0.2 e não representam estoque real da MixCell. Antes de publicar, devem ser substituídos pelo conteúdo confirmado pela loja.</p>
+                    </div>
+                </div>
+
+                <div class="product-grid" id="productGrid"></div>
+                <p class="fineprint">* Conteúdo demonstrativo para validação visual. Consulte a MixCell para disponibilidade e valores reais.</p>
+            </div>
+        </section>
+
+        <section class="section trust">
+            <div class="container trust-grid">
+                <div class="trust-lead">
+                    <div>
+                        <div class="eyebrow">Presença local</div>
+                        <h2 class="section-title" style="font-size:clamp(2.5rem,4.6vw,4.6rem)">Quem já passou pela MixCell ajuda a contar a história.</h2>
+                    </div>
+                    <div>
+                        <div class="rating">4,7</div>
+                        <div class="stars" aria-label="4,7 de 5 estrelas">★★★★★</div>
+                        <p class="muted">78 avaliações observadas durante a pesquisa Lumi Noob. Essa informação é um retrato daquele momento e pode mudar.</p>
+                    </div>
+                </div>
+
+                <div class="trust-photos">
+                    <div class="trust-card"><img src="assets/assistencia.webp" alt="Registro da assistência da MixCell" loading="lazy"></div>
+                    <div class="trust-card"><img src="assets/mixcell_inside.webp" alt="Interior da MixCell" loading="lazy"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="duvidas">
+            <div class="container faq-grid">
+                <div>
+                    <div class="eyebrow">Dúvidas frequentes</div>
+                    <h2 class="section-title">Perguntas frequentes.</h2>
+                    <p class="muted">Algumas respostas gerais para orientar a conversa. Diagnóstico de aparelho exige avaliação do caso.</p>
+                    <a class="btn btn-primary" href="https://wa.me/5531994152514?text=Ol%C3%A1%21%20Tenho%20uma%20d%C3%BAvida%20sobre%20meu%20celular." target="_blank" rel="noopener noreferrer">◉ Falar no WhatsApp →</a>
+                </div>
+
+                <div class="faq-list">
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>Por que meu celular não para de travar?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>Travamentos podem acontecer por pouco espaço, aplicativos com falhas, software desatualizado ou problemas de hardware. Sem avaliar o aparelho não é possível apontar uma causa específica.</p></div></div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>Meu celular não está carregando. O que pode ser?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>A origem pode estar no cabo, carregador, conector, bateria ou em outro componente. Se o problema persiste, uma avaliação técnica ajuda a identificar a causa.</p></div></div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>A tela quebrou. Preciso trocar tudo?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>Depende do modelo e da extensão do dano. Vidro, display e conjunto de tela variam entre aparelhos, então a necessidade de troca precisa ser avaliada.</p></div></div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>Como sei se a bateria está com problema?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>Queda anormal de autonomia, desligamentos inesperados e comportamento irregular podem indicar que vale a pena investigar a bateria, embora esses sinais também possam ter outras causas.</p></div></div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>Vocês vendem celulares?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>Sim. A venda de celulares foi confirmada durante a pesquisa. Para saber quais modelos estão disponíveis agora, consulte a MixCell pelo WhatsApp.</p></div></div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>Também encontro capinhas, fones e películas?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>Esses acessórios foram identificados na pesquisa de campo. A disponibilidade de um item ou modelo específico deve ser confirmada diretamente com a loja.</p></div></div>
+                    </article>
+                    <article class="faq-item">
+                        <button class="faq-question" type="button" aria-expanded="false"><span>Qual é o horário de atendimento?</span><span class="faq-plus">+</span></button>
+                        <div class="faq-answer"><div><p>Na coleta realizada para esta versão, o horário informado foi de segunda a sexta, das 08:30 às 18:30, e sábado, das 08:30 às 14:00.</p></div></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section contact" id="contato">
+            <div class="container contact-card">
+                <div class="contact-info">
+                    <div>
+                        <div class="eyebrow">Onde encontrar</div>
+                        <h2>Vem pra MixCell.</h2>
+                        <p class="muted">Veja o endereço, horário informado na pesquisa e abra a rota quando quiser visitar a loja.</p>
+                    </div>
+
+                    <div class="contact-meta">
+                        <div><strong>Horário</strong>Segunda a sexta · 08:30–18:30<br>Sábado · 08:30–14:00</div>
+                        <div><strong>Endereço</strong>R. Comendador Antônio Alves, 608 — Centro<br>Pedro Leopoldo — MG, 33600-000</div>
+                        <div><a class="btn btn-primary" href="https://maps.app.goo.gl/youmimvddGpCYbCJ7" target="_blank" rel="noopener noreferrer">Abrir rota →</a></div>
+                    </div>
+                </div>
+
+                <div class="map">
+                    <iframe title="Mapa da MixCell Pedro Leopoldo" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=R.%20Comendador%20Ant%C3%B4nio%20Alves%2C%20608%20-%20Centro%2C%20Pedro%20Leopoldo%20-%20MG%2C%2033600-000&output=embed"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-row">
+            <div>
+                <img class="footer-logo" src="assets/logo.webp" alt="MixCell">
+                <div class="muted">Pedro Leopoldo · MG</div>
+            </div>
+            <div class="signature">Pensado, testado e desenvolvido por <a href="https://lcom-it.com.br" target="_blank" rel="noopener noreferrer">LCOM ↗</a></div>
+        </div>
+    </footer>
+
+    <script>
+        const demoProducts = [
+            ["iPhone 14 · demo", "R$ 3.999"],
+            ["iPhone 13 · demo", "R$ 3.299"],
+            ["Galaxy S23 · demo", "R$ 2.999"],
+            ["Galaxy A54 · demo", "R$ 1.899"],
+            ["Motorola Edge · demo", "R$ 1.799"],
+            ["Redmi Note · demo", "R$ 1.299"],
+            ["Modelo 07 · demo", "R$ 1.099"],
+            ["Modelo 08 · demo", "R$ 1.499"],
+            ["Modelo 09 · demo", "R$ 2.199"]
+        ];
+
+        const productGrid = document.querySelector("#productGrid");
+
+        demoProducts.forEach(([name, price]) => {
+            const message = encodeURIComponent(`Olá! Vi o ${name.replace(" · demo", "")} na demonstração do site da MixCell e gostaria de saber quais aparelhos semelhantes estão disponíveis.`);
+
+            productGrid.insertAdjacentHTML("beforeend", `
+                <article class="product-card">
+                    <div class="product-visual"><div class="product-phone" aria-hidden="true"></div></div>
+                    <span class="demo-label">Demonstração V0.2</span>
+                    <h3>${name}</h3>
+                    <div class="price">${price}*</div>
+                    <a class="btn btn-primary" href="https://wa.me/5531994152514?text=${message}" target="_blank" rel="noopener noreferrer">◉ Tenho interesse</a>
+                </article>
+            `);
+        });
+
+        document.querySelectorAll(".faq-question").forEach((button) => {
+            button.addEventListener("click", () => {
+                const item = button.closest(".faq-item");
+                const isOpen = item.classList.toggle("open");
+                button.setAttribute("aria-expanded", String(isOpen));
+            });
+        });
+
+        const menuToggle = document.querySelector(".menu-toggle");
+        const mobileMenu = document.querySelector("#mobileMenu");
+        const mobileMenuLinks = [...mobileMenu.querySelectorAll("a")];
+        let lastFocusedElement = null;
+
+        const getFocusableMenuItems = () => [
+            menuToggle,
+            ...mobileMenu.querySelectorAll('a[href], button:not([disabled])')
+        ];
+
+        function openMobileMenu() {
+            lastFocusedElement = document.activeElement;
+            document.body.classList.add("menu-open");
+            mobileMenu.classList.add("is-open");
+            mobileMenu.setAttribute("aria-hidden", "false");
+            menuToggle.setAttribute("aria-expanded", "true");
+            menuToggle.setAttribute("aria-label", "Fechar menu");
+            requestAnimationFrame(() => mobileMenuLinks[0]?.focus());
+        }
+
+        function closeMobileMenu({ restoreFocus = true } = {}) {
+            document.body.classList.remove("menu-open");
+            mobileMenu.classList.remove("is-open");
+            mobileMenu.setAttribute("aria-hidden", "true");
+            menuToggle.setAttribute("aria-expanded", "false");
+            menuToggle.setAttribute("aria-label", "Abrir menu");
+
+            if (restoreFocus) {
+                (lastFocusedElement || menuToggle).focus();
+            }
+        }
+
+        menuToggle.addEventListener("click", () => {
+            const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+            isOpen ? closeMobileMenu() : openMobileMenu();
+        });
+
+        mobileMenu.addEventListener("click", (event) => {
+            if (event.target === mobileMenu) {
+                closeMobileMenu();
+            }
+        });
+
+        mobileMenuLinks.forEach((link) => {
+            link.addEventListener("click", () => {
+                link.style.color = "var(--orange)";
+                window.setTimeout(() => {
+                    link.style.color = "";
+                    closeMobileMenu({ restoreFocus: false });
+                }, 120);
+            });
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (menuToggle.getAttribute("aria-expanded") !== "true") return;
+
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeMobileMenu();
+                return;
+            }
+
+            if (event.key === "Tab") {
+                const focusable = getFocusableMenuItems();
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 900 && menuToggle.getAttribute("aria-expanded") === "true") {
+                closeMobileMenu({ restoreFocus: false });
+            }
+        });
+
+    </script>
+</body>
+</html>
